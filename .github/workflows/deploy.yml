@@ -21,3 +21,16 @@ jobs:
         with:
           push: true
           tags: ${{ secrets.REGISTRY_USERNAME }}/docker-playground:docker-playground
+
+      - name: Pull image from registry and create container
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            docker stop app
+            docker rm app
+            docker pull ${{ secrets.REGISTRY_USERNAME }}/docker-playground:docker-playground
+            docker run -d --name app -p 80:3000 ${{ secrets.REGISTRY_USERNAME }}/docker-playground:docker-playground
